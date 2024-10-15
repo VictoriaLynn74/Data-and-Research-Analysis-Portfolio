@@ -1,1 +1,1 @@
-Here are some log and do files showcasing analysis done using STATA
+Here are some do files showcasing analysis done using STATA
