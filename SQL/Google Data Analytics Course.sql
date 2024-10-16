@@ -42,5 +42,83 @@ FROM
 WHERE
   TRIM(state) = 'OH'
 
+-- Practical Test
+--Cars Dataset
+--Querying fuel types
+  
+SELECT 
+DISTINCT fuel_type
+ FROM `vaulted-circle-437604-e2.cars.car_info` LIMIT 1000
+ -- inspecting lenth column
+SELECT
+  MIN(length) AS min_length,
+  MAX(length) AS max_length
+FROM
+  `vaulted-circle-437604-e2.cars.car_info`
+--checking for nulls
+SELECT
+  *
+FROM
+  `vaulted-circle-437604-e2.cars.car_info`
+WHERE 
+ num_of_doors IS NULL
+
+--updating null values
+UPDATE
+  `vaulted-circle-437604-e2.cars.car_info`
+SET num_of_doors = 'four'
+WHERE 
+  make = "dodge"
+  AND fuel_type = "gas"
+  AND body_style = "sedan";
+
+--for the Mazda
+UPDATE
+  `vaulted-circle-437604-e2.cars.car_info`
+SET num_of_doors = 'four'
+WHERE 
+  make = "mazda"
+  AND fuel_type = "diesel"
+  AND body_style = "sedan";
+
+-- correcting misspelt field
+UPDATE
+  `vaulted-circle-437604-e2.cars.car_info`
+SET
+  num_of_cylinders = "two"
+WHERE
+  num_of_cylinders = "tow";
+
+-- Deleting a row with wrong data
+DELETE 
+`vaulted-circle-437604-e2.cars.car_info`
+WHERE 
+compression_ratio = 70;
+--finding car with highest prices 
+SELECT 
+ make, price
+FROM `vaulted-circle-437604-e2.cars.car_info`
+ORDER BY price DESC;
+
+--NEW EXERCISE
+--Sorting customer purchase data
+
+SELECT 
+purchase_price
+ FROM `vaulted-circle-437604-e2.customer_data.customer_purchase` 
+ ORDER BY
+   purchase_price DESC
+
+-- converting purchase_price to sfloat from string
+SELECT 
+CAST(purchase_price AS FLOAT64)
+ FROM `vaulted-circle-437604-e2.customer_data.customer_purchase` 
+ 
+ ORDER BY
+ CAST(purchase_price AS FLOAT64) DESC
+
+
+
+
 
 
