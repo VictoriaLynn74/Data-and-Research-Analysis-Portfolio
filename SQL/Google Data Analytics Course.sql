@@ -117,6 +117,28 @@ CAST(purchase_price AS FLOAT64)
  ORDER BY
  CAST(purchase_price AS FLOAT64) DESC
 
+--ADVANCED DATA CLEANING FUNCTIONS
+
+--purchases in the month of December
+SELECT 
+CAST(date AS date) AS date_only,
+purchase_price
+ FROM `vaulted-circle-437604-e2.customer_data.customer_purchase` 
+  WHERE
+   date BETWEEN '2020-12-01' AND '2020-12-31'
+
+--using CONCAT function
+SELECT 
+CONCAT(product_code, product_color) AS new_product_code
+ FROM `vaulted-circle-437604-e2.customer_data.customer_purchase` 
+  WHERE
+   product = 'couch'
+
+--Using COALESCE Function 
+SELECT 
+COALESCE(product, product_code) AS product_info
+ FROM `vaulted-circle-437604-e2.customer_data.customer_purchase` 
+
 
 
 
