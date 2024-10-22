@@ -139,7 +139,62 @@ SELECT
 COALESCE(product, product_code) AS product_info
  FROM `vaulted-circle-437604-e2.customer_data.customer_purchase` 
 
+--FILTERING MOVIE DATA
+ SELECT *
+ FROM `striking-gadget-215217.movie_dat.movies` 
+ WHERE Genre = 'Comedy';
 
+--SORTING DATA
+SELECT *
+ FROM `striking-gadget-215217.movie_dat.movies` 
+ ORDER BY 
+ Release_Date DESC;
+
+--multiple conditions
+SELECT *
+ FROM `striking-gadget-215217.movie_dat.movies` 
+ WHERE 
+ Genre = "Comedy"
+AND Revenue > 300000000
+ORDER BY 
+ Release_Date DESC;
+--using public datasets
+SELECT *
+ FROM
+  `bigquery-public-data.sdoh_cdc_wonder_natality.county_natality` 
+  ORDER BY
+  Births ASC
+  LIMIT 10
+--ADDING MULTIPLE CONDITIONS
+SELECT *
+ FROM
+  `bigquery-public-data.sdoh_cdc_wonder_natality.county_natality` 
+ WHERE
+  County_of_Residence = 'Erie County, NY' 
+  OR County_of_Residence = 'Niagara County, NY'
+  OR County_of_Residence = 'Chautauqua County, NY'
+ORDER BY
+  County_of_Residence, 
+  Year
+
+--Aggregating temperature
+SELECT 
+ stn ,
+    AVG(temperature) AS average_temperature
+ FROM `striking-gadget-215217.demos.nyc_weather` 
+ WHERE
+ date BETWEEN '2020-06-01' AND '2020-06-30'
+ GROUP BY 
+    stn;
+
+--OR
+
+SELECT 
+    AVG(temperature) AS average_temperature
+ FROM `striking-gadget-215217.demos.nyc_weather` 
+ WHERE
+ date BETWEEN '2020-06-01' AND '2020-06-30'
+ 
 
 
 
