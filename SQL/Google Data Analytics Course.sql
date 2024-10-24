@@ -209,7 +209,180 @@ ROUND(AVG(cast(tripduration as int64)/60),2) AS duration,
  num_trips DESC
  LIMIT 10
 
+--JOINS
+--INNER JOIN
+SELECT
+ employees.name AS employee_name,
+ departments.name AS department_name,
+FROM `striking-gadget-215217.employee_data.employees` AS  employees
+INNER JOIN 
+`striking-gadget-215217.employee_data.departments`
+AS departments
+ON employees.department_id = departments.department_id
 
+ SELECT `bigquery-public-data.world_bank_intl_education.international_education`.country_name,
+    `bigquery-public-data.world_bank_intl_education.country_summary`.country_code,
+    `bigquery-public-data.world_bank_intl_education.international_education`.value
+FROM `bigquery-public-data.world_bank_intl_education.international_education`
+INNER JOIN `bigquery-public-data.world_bank_intl_education.country_summary`
+ON `bigquery-public-data.world_bank_intl_education.country_summary`.country_code = `bigquery-public-data.world_bank_intl_education.international_education`.country_code
+
+
+ SELECT
+summary.region,
+SUM(edu.value) secondary_edu_population
+FROM
+    `bigquery-public-data.world_bank_intl_education.international_education` AS edu
+INNER JOIN
+    `bigquery-public-data.world_bank_intl_education.country_summary` AS summary
+ON edu.country_code = summary.country_code --country_code is our key
+    WHERE summary.region IS NOT NULL
+    AND edu.indicator_name = 'Population of the official age for secondary education, both sexes (number)'
+    AND edu.year = 2015
+GROUP BY summary.region
+ORDER BY secondary_edu_population DESC
+
+ SELECT 
+state,
+	COUNT(DISTINCT order_id) as num_orders
+ FROM `striking-gadget-215217.warehouse_orders.orders`AS orders
+ JOIN `striking-gadget-215217.warehouse_orders.warehouse`warehouse ON orders.warehouse_id = warehouse.warehouse_id
+GROUP BY
+	warehouse.state 
+
+
+ SELECT 
+	station_id,
+	name,
+	number_of_rides AS number_of_rides_starting_at_station
+FROM
+	(
+		SELECT
+			CAST(start_station_id AS STRING) AS start_station_id_str, 
+			COUNT(*) AS number_of_rides
+		FROM 
+      		bigquery-public-data.new_york.citibike_trips
+		GROUP BY 
+			CAST(start_station_id AS STRING) 
+	)
+	AS station_num_trips
+	INNER JOIN 
+		bigquery-public-data.new_york.citibike_stations 
+	ON 
+		station_id = start_station_id_str
+	ORDER BY 
+		number_of_rides DESC;
+
+ --LEFT JOIN
+SELECT
+ employees.name AS employee_name,
+ employees.role AS employee_role,
+ departments.name AS department_name,
+FROM `striking-gadget-215217.employee_data.employees` AS  employees
+LEFT JOIN 
+`striking-gadget-215217.employee_data.departments`
+AS departments
+ON employees.department_id = departments.department_id
+--RIGHT JOIN
+SELECT
+ employees.name AS employee_name,
+ employees.role AS employee_role,
+ departments.name AS department_name,
+FROM `striking-gadget-215217.employee_data.employees` AS  employees
+RIGHT JOIN 
+`striking-gadget-215217.employee_data.departments`
+AS departments
+ON employees.department_id = departments.department_id
+--OUTER JOIN
+SELECT
+ employees.name AS employee_name,
+ employees.role AS employee_role,
+ departments.name AS department_name,
+FROM `striking-gadget-215217.employee_data.employees` AS  employees
+FULL OUTER JOIN 
+`striking-gadget-215217.employee_data.departments`
+AS departments
+ON employees.department_id = departments.department_id
+
+--SUBQUERIES
+ --Using new_york_citibike public dataset
+ 
+SELECT 
+    subquery.start_station_id,
+    subquery.avg_duration
+ FROM
+   (
+    SELECT
+        start_station_id,
+        AVG(tripduration) AS avg_duration
+FROM bigquery-public-data.new_york_citibike.citibike_trips
+GROUP BY start_station_id) as subquery
+ORDER BY avg_duration DESC;
+
+--comparing trip duration by station
+SELECT
+    starttime,
+    start_station_id,
+    tripduration,
+    (
+        SELECT ROUND(AVG(tripduration),2)
+        FROM bigquery-public-data.new_york_citibike.citibike_trips
+        WHERE start_station_id = outer_trips.start_station_id
+    ) AS avg_duration_for_station,
+    ROUND(tripduration - (
+        SELECT AVG(tripduration)
+        FROM bigquery-public-data.new_york_citibike.citibike_trips
+        WHERE start_station_id = outer_trips.start_station_id), 2) AS difference_from_avg
+FROM bigquery-public-data.new_york_citibike.citibike_trips AS outer_trips
+ORDER BY difference_from_avg DESC
+LIMIT 25;
+
+--5 stations with longest mean trip duration
+
+SELECT
+    tripduration,
+    start_station_id
+FROM bigquery-public-data.new_york_citibike.citibike_trips
+WHERE start_station_id IN
+    (
+        SELECT
+            start_station_id
+        FROM
+        (
+            SELECT
+                start_station_id,
+                AVG(tripduration) AS avg_duration
+            FROM bigquery-public-data.new_york_citibike.citibike_trips
+            GROUP BY start_station_id
+        ) AS top_five
+        ORDER BY avg_duration DESC
+        LIMIT 5
+    );
+
+--Using Subqueries to Aggregate Data
+--using uploaded dataset
+
+SELECT
+  Warehouse.warehouse_id,
+  CONCAT(Warehouse.state, ': ', Warehouse.warehouse_alias) AS warehouse_name,
+  COUNT(Orders.order_id) AS number_of_orders,
+  (SELECT COUNT(*) FROM striking-gadget-215217.warehouse_orders.orders AS Orders) AS total_orders,
+  CASE
+    WHEN COUNT(Orders.order_id)/(SELECT COUNT(*) FROM striking-gadget-215217.warehouse_orders.orders AS Orders) <= 0.20
+    THEN 'Fulfilled 0-20% of Orders'
+    WHEN COUNT(Orders.order_id)/(SELECT COUNT(*) FROM striking-gadget-215217.warehouse_orders.orders AS Orders) > 0.20
+    AND COUNT(Orders.order_id)/(SELECT COUNT(*) FROM striking-gadget-215217.warehouse_orders.orders AS Orders) <= 0.60
+    THEN 'Fulfilled 21-60% of Orders'
+    ELSE 'Fulfilled more than 60% of Orders'
+  END AS fulfillment_summary
+FROM striking-gadget-215217.warehouse_orders.warehouse AS Warehouse
+LEFT JOIN striking-gadget-215217.warehouse_orders.orders AS Orders
+ON Orders.warehouse_id = Warehouse.warehouse_id
+GROUP BY
+  Warehouse.warehouse_id,
+  warehouse_name
+HAVING
+  COUNT(Orders.order_id) > 0
  
 
 
