@@ -1,8 +1,11 @@
-#installng package
+#installing package
+
  install.packages("palmerpenguins")
 library("palmerpenguins")
 summary(penguins)
 View(penguins)
+
+#installing Tidyverse
 install.packages("tidyverse")
 library(tidyverse)
 #creating vizualization
