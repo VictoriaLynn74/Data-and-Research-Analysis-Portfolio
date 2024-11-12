@@ -50,6 +50,37 @@ ggplot(data = diamonds, aes(x = carat, y = price, color = cut)) +
   geom_point() +
   facet_wrap(~cut)
 
+# ToothGrowth dataset
+data("ToothGrowth")
+View(ToothGrowth)
+
+# Installing dplyr package
+install.packages("dplyr")
+library(dplyr)
+
+# Filtering the data
+filtered_tg <- filter(ToothGrowth, dose == 0.5)
+filtered_tg
+
+#Sorting the Data
+arrange(filtered_tg, len)
+
+# Using Nested Functions
+arrange(filter(ToothGrowth, dose == 0.5), len)
+
+#Using Pipes
+filtered_toothgrowth <- ToothGrowth %>% 
+  filter(dose == 0.5) %>% 
+  arrange(len)
+filtered_toothgrowth
+
+filtered_toothgrowth2 <- ToothGrowth %>% 
+  filter(dose == 0.5) %>% 
+  group_by(supp) %>% 
+  summarise(mean_len = mean(len, na.rm = T), .group = "drop")
+filtered_toothgrowth2
+
+
 
 
 
