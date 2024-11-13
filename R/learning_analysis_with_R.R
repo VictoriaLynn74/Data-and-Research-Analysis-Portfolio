@@ -136,6 +136,65 @@ penguins %>% group_by(island,species) %>% drop_na() %>% summarise(mean_bl = mean
 # Filtering Data
 penguins %>% filter(species=="Adelie")
 
+# Combining two columns
+example_df <- bookings_df %>%
+  select(arrival_date_year, arrival_date_month) %>% 
+  unite(arrival_month_year, c("arrival_date_month", "arrival_date_year"), sep = " ")
+
+example_df <- bookings_df %>%
+  mutate(guests = adults + children + babies )
+head(example_df)
+
+# Transforming Data
+id<- c(1:10)
+name <- c("John Mendes", "Rob Stewart", "Rachel Abrahamson", "Christy Hickman", "Johnson Harper", "Candace Miller", "Carlson Landy", "Pansy Jordan", "Darius Berry", "Claudia Garcia")
+
+
+job_title <- c("Professional", "Programmer", "Management", "Clerical", "Developer", "Programmer", "Management", "Clerical", "Developer", "Programmer")
+
+
+employee <- data.frame(id, name, job_title)
+print(employee)
+
+# Splitting Columns
+separate(employee, name,into=c('first_name', 'last_name'), sep= ' ')
+
+first_name <- c("John", "Rob", "Rachel", "Christy", "Johnson", "Candace", "Carlson", "Pansy", "Darius", "Claudia")
+
+last_name <- c("Mendes", "Stewart", "Abrahamson", "Hickman", "Harper", "Miller", "Landy", "Jordan", "Berry", "Garcia")
+
+job_title <- c("Professional", "Programmer", "Management", "Clerical", "Developer", "Programmer", "Management", "Clerical", "Developer", "Programmer")
+
+employee <- data.frame(id, first_name, last_name, job_title)
+
+print(employee)
+
+# Combining two columns
+unite(employee, 'name', first_name,last_name,sep = ' ')
+
+# Adding New Columns
+View(penguins)
+penguins %>% 
+  mutate(body_mass_kg=body_mass_g/1000, flipper_length_m=flipper_length_mm/1000)
+# Anscombe's Quartet
+install.packages("Tmisc")
+library(Tmisc)
+data(quartet)
+View(quartet)
+quartet %>% 
+  group_by(set) %>% 
+  summarise(mean(x),sd(x),mean(y),sd(y),cor(x,y))
+
+# Plotting the data
+ggplot(quartet,aes(x,y))+geom_point()+geom_smooth(method=lm,se=FALSE)+facet_wrap(-set)
+
+install.packages('datasauRus')
+
+library('datasauRus')
+
+ggplot(datasaurus_dozen,aes(x=x,y=y,colour=dataset))+geom_point()+theme_void()+theme(legend.position = "none")+facet_wrap(~dataset,ncol=3
+
+                                                                                                                    
 
 
 
