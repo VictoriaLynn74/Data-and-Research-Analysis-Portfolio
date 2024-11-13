@@ -80,6 +80,63 @@ filtered_toothgrowth2 <- ToothGrowth %>%
   summarise(mean_len = mean(len, na.rm = T), .group = "drop")
 filtered_toothgrowth2
 
+# Adding new Column to Data frame
+data("diamonds")
+head(diamonds)
+colnames(diamonds)
+mutate(diamonds, carat_2=carat*100)
+
+#Creating a data frame using vectors
+names <- c("Joy", "Victoria", "Lincoln", "Patience")
+age <- c(29,24 ,22 ,16 )
+people <- data.frame(names, age)
+mutate(people, age_in_20 = age + 20)
+
+# Data Cleaning
+install.packages("here")
+library("here")
+install.packages("skimr")
+library("skimr")
+install.packages("janitor")
+library("janitor")
+install.packages("dplyr")
+library("dplyr")
+install.packages("palmerpenguins")
+library("palmerpenguins")
+library("tidyr")
+
+
+skim_without_charts(penguins)
+glimpse(penguins)
+
+# Selecting one column
+penguins %>% 
+  select(species)
+
+# Excluding one column
+penguins %>% 
+  select(-species)
+
+# Clean names with janitor package
+clean_names(penguins)
+
+# Sorting Data
+penguins %>% arrange(bill_length_mm)
+
+# Descending order
+penguins %>% arrange(-bill_length_mm)
+penguins_2<-penguins %>% arrange(-bill_length_mm)
+View(penguins_2)
+
+# Group By
+penguins %>% group_by(island) %>% drop_na() %>% summarise(mean_bill_length_mm = mean(bill_length_mm))
+penguins %>% group_by(island) %>% drop_na() %>% summarise(max_bill_length_mm = max(bill_length_mm))
+penguins %>% group_by(island,species) %>% drop_na() %>% summarise(mean_bl = mean(bill_length_mm), max_bl = max(bill_length_mm))
+
+# Filtering Data
+penguins %>% filter(species=="Adelie")
+
+
 
 
 
