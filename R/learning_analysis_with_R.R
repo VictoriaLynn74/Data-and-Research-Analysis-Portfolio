@@ -194,8 +194,32 @@ library('datasauRus')
 
 ggplot(datasaurus_dozen,aes(x=x,y=y,colour=dataset))+geom_point()+theme_void()+theme(legend.position = "none")+facet_wrap(~dataset,ncol=3
 
-                                                                                                                    
+# ggplot2
+library("ggplot2")
+library("palmerpenguins")\
+ggplot(data=penguins) + geom_point(mapping = aes(x=flipper_length_mm, y= body_mass_g))
+ggplot(data=penguins) + geom_point(mapping = aes(x=bill_length_mm, y= bill_depth_mm))
 
+# Adding color to plots
+ggplot(data=penguins) + geom_point(mapping = aes(x=flipper_length_mm, y= body_mass_g, colour = species))
+ggplot(data=penguins) + geom_point(mapping = aes(x=flipper_length_mm, y= body_mass_g,alpha = species))
+
+# Changing color of all points
+ggplot(data=penguins) + geom_point(mapping = aes(x=flipper_length_mm, y= body_mass_g),colour = "pink")
+
+# Adding shapes and size to points
+ggplot(data=penguins) + geom_point(mapping = aes(x=flipper_length_mm, y= body_mass_g,color=species,size=species, shape = species))
+                                                                                                                          
+# Working with geoms
+ggplot(data = penguins)+ geom_smooth(mapping = aes(x=flipper_length_mm,y=body_mass_g))
+ggplot(data = penguins)+ geom_smooth(mapping = aes(x=flipper_length_mm,y=body_mass_g,linetype = species))
+
+# Two geoms in one plot
+ggplot(data = penguins)+ geom_smooth(mapping = aes(x=flipper_length_mm,y=body_mass_g)) + geom_point(mapping = aes(x=flipper_length_mm, y= body_mass_g))
+                                                                                                                    
+# ggplot bar charts
+ggplot(data=diamonds)+
+  geom_bar(mapping = aes(x=cut, fill = clarity))
 
 
 
