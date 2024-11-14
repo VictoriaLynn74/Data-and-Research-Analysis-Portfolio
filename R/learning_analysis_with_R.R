@@ -220,8 +220,16 @@ ggplot(data = penguins)+ geom_smooth(mapping = aes(x=flipper_length_mm,y=body_ma
 # ggplot bar charts
 ggplot(data=diamonds)+
   geom_bar(mapping = aes(x=cut, fill = clarity))
-
-
+                                                                                                                          
+# Adding labels and annotations
+ggplot(data=penguins)+
+  geom_point(mapping = aes(x=flipper_length_mm, y= body_mass_g, colour=species))+
+  labs(title="Palmer Penguins Body Size vs Flipper Length", subtitle = "Sample of Three Penguins",
+       caption = "Data collected by Dr.Kristen Gorman")+
+  annotate("text", x=220, y=3500, label = "The Gentoos are the Largest", colour = "blue", fontface= "italic")
+                                                                                                                          
+# Saving plots
+ggsave("Palmer Penguins.png")
 
 
 
