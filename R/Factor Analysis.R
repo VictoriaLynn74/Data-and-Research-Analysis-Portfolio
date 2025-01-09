@@ -20,7 +20,7 @@ bartlett.test(orgperfom_model)
 
 # Factor Analysis
 
-coord_fa <- fa(coord_model, nfactors = 2, rotate = "varimax") # Adjust nfactors based on your needs
+coord_fa <- fa(coord_model, nfactors = 2, rotate = "varimax")
 print(coord_fa)
 leadership_fa <- fa(leadership_model, nfactors = 2, rotate = "varimax")
 print(leadership_fa)
