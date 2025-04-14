@@ -1,2 +1,8 @@
 # Data-and-Research-Analysis-Portfolio
-I am a passionate researcher and data analyst. I use tools such as STATA, SPSS, and I'm currently growing my toolbox with R,SQL and much more. This porfolio showcases my journey as I undertake various projects to grow my skills in research and data analytics tools.
+
+👋 Hi there! I'm Victoria, a passionate researcher and aspiring development economist growing my skills in data analytics and impact evaluation.
+
+My journey includes academic research, field experience, and a deep curiosity about using data to drive real-world change. I have hands-on experience with tools like **STATA** and **SPSS**, and I'm expanding my skills in **R**, **SQL**, and open-source platforms to deepen my analytical skillset.
+
+This portfolio documents my learning and growth through real and practice-based projects—from statistical modeling to impact analysis and data visualization.
+
