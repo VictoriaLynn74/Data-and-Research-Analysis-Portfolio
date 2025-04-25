@@ -30,9 +30,8 @@ This portfolio documents my learning and growth through real and practice-based 
 
 ## 📬 Let’s Connect
 
-- ✉️ Email: kiboi@example.com  
-- 🌐 Portfolio Website: [victoriakiboi.github.io/portfolio](https://victoriakiboi.github.io/portfolio) *(if using GitHub Pages)*  
-- 💼 LinkedIn: [linkedin.com/in/victoria-kiboi](#) *(replace with your URL)*
+- ✉️ Email: kiboivwairimu@gmail.com  
+- 💼 LinkedIn: [linkedin.com/in/victoria-kiboi](#) 
 
 ---
 
