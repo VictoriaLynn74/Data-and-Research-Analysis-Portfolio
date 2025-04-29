@@ -65,8 +65,6 @@ save "C:\Users\user\Downloads\Stata Test\Data Files\schools.dta", replace
 replace num_teachers = abs(num_teachers) if num_teachers < 0
 // Convert negative values to positive for num_classrooms
 replace num_classroom = abs(num_classroom) if num_classroom < 0
-// Replace extreme values over 100 with missing
-replace num_classroom = . if num_classroom > 100
 
 save "C:\Users\user\Downloads\Stata Test\Data Files\schools.dta", replace
 use "C:\Users\user\Downloads\Stata Test\Data Files\students.dta"
