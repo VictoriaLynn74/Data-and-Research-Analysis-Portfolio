@@ -1,0 +1,279 @@
+---
+title: "RCT Impact Evaluation"
+author: "Victoria"
+date: "2025-04-29"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+# Evaluating the impact of an education intervention in Indonesia.
+
+### Reading data
+```{r Reading Students Data}
+install.packages("haven")
+library(haven)
+students <- read_dta("RCT data/Data Files/students.dta")
+
+```
+## Renaming and Lablelling Variables 
+```{r Renaming_and_Labelling_students}
+install.packages("dplyr")
+library(dplyr)
+
+# Step 1: Rename variables
+students <- students %>%
+  rename(
+    district_id        = var1,
+    student_id         = var2,
+    income_quintile    = var3,
+    gender             = var4,
+    dob_day            = var5,
+    dob_month          = var6,
+    dob_year           = var7,
+    mother_edu         = var8,
+    father_edu         = var9,
+    literacy_baseline  = var10,
+    literacy_endline   = var11,
+    numeracy_score     = var12
+  )
+
+# Step 2: Label variables
+attr(students$district_id,       "label") <- "District identifier"
+attr(students$student_id,        "label") <- "Student identifier"
+attr(students$income_quintile,   "label") <- "Income quintile"
+attr(students$gender,            "label") <- "Student's gender"
+attr(students$dob_day,           "label") <- "Student's date of birth - day"
+attr(students$dob_month,         "label") <- "Student's date of birth - month"
+attr(students$dob_year,          "label") <- "Student's date of birth - year"
+attr(students$mother_edu,        "label") <- "Mother's education level"
+attr(students$father_edu,        "label") <- "Father's education level"
+attr(students$literacy_baseline, "label") <- "Literacy score, baseline"
+attr(students$literacy_endline,  "label") <- "Literacy score, endline"
+attr(students$numeracy_score,    "label") <- "Numeracy score"
+
+# Assigning value labels
+students$gender <- factor(students$gender, 
+                          levels = c(1, 5), 
+                          labels = c("Male", "Female"))
+
+students$income_quintile <- factor(students$income_quintile, 
+                                   levels = 1:5, 
+                                   labels = c("Q1 (Lowest)", "Q2", "Q3", "Q4", "Q5 (Highest)"))
+
+students$mother_edu <- factor(students$mother_edu, 
+                              levels = 1:4, 
+                              labels = c("No schooling", "Primary", "Secondary", "Tertiary and above"))
+
+students$father_edu <- factor(students$father_edu, 
+                              levels = 1:4, 
+                              labels = c("No schooling", "Primary", "Secondary", "Tertiary and above"))
+
+
+
+```
+### Summary Statistics
+```{r Summary}
+# Check summary statistics
+install.packages("skimr")
+library(skimr)
+skim(students)
+
+```
+### Cleaning Data
+```{r missing}
+# Checking for missing values
+colSums(is.na(students))  
+
+
+```
+```{r Negatives}
+# Check for negative dates
+students %>% filter(dob_day <= 0 | dob_day > 31)
+students %>% filter(dob_month <= 0 | dob_month > 12)
+students %>% filter(dob_year < 1900 | dob_year > 2025)
+```
+```{r Converting_to_Absolute}
+# Convert negative to absolute values
+students <- students %>%
+  mutate(
+    dob_month = abs(dob_month),
+  )
+
+```
+```{r  Saving}
+# Save dataset
+write_dta(students,"students.dta")
+```
+## Schools Dataset
+```{r Schools_Dataset}
+library(haven)
+schools <- read_dta("RCT data/Data Files/schools.dta")
+
+```
+### Renaming and Labelling Variables
+```{r renaming_and_labelling_schools}
+library(dplyr)
+
+# Step 1: Rename the variables
+schools <- schools %>%
+  rename(
+    district_id     = var1,
+    school_id       = var2,
+    treatment       = var3,
+    num_teachers    = var4,
+    num_classrooms  = var5,
+    urban_rural     = var6
+  )
+
+# Step 2: Label each variable
+attr(schools$district_id,    "label") <- "District identifier"
+attr(schools$school_id,      "label") <- "School identifier"
+attr(schools$treatment,      "label") <- "Treatment assignment"
+attr(schools$num_teachers,   "label") <- "Number of teachers in the school"
+attr(schools$num_classrooms, "label") <- "Number of classrooms in the school"
+attr(schools$urban_rural,    "label") <- "Urban/rural status"
+
+# Assigning value labels
+schools $urban_rural <- factor(schools$urban_rural, 
+                               levels = c(1, 7), 
+                               labels = c("Urban", "Rural"))
+schools$treatment <- factor(schools$treatment, 
+                             levels = 0:2, 
+                             labels = c("Control Group", "Treatment 1", "Treatment 2"))
+
+
+
+
+
+```
+### Summary Statistics
+```{r schools_summary}
+library(skimr)
+skim(schools)
+
+```
+
+```{r Extreme}
+## Identifying extreme or negative values
+min(schools$num_classrooms, na.rm = TRUE)
+max(schools$num_classrooms, na.rm = TRUE)
+min(schools$num_teachers, na.rm = TRUE)
+max(schools$num_teachers, na.rm = TRUE)
+
+```
+### Cleaning Data
+We seem to have negative teachers and classrooms, we'll convert these to absolute values
+```{r schools_absolute}
+schools <- schools %>%
+  mutate(
+    num_teachers   = abs(num_teachers),
+    num_classrooms = abs(num_classrooms)
+  )
+write_dta(schools, "schools.dta")
+```
+### Importing additional CSV data file
+```{r takeup}
+
+library(readr)
+take_up <- read_csv("RCT data/Data Files/take-up.csv")
+
+```
+### Skimming the takeup data 
+```{r}
+library(skimr)
+skim(take_up)
+```
+### Cleaning the Take up dataset
+```{r takeup_school}
+# Remove trailing spaces, extra zeros and ashes in the school variable
+take_up$school <- trimws(take_up$school)
+take_up$school <- gsub("^0+", "", take_up$school)
+take_up$school <- gsub("-", "", take_up$school)
+take_up$school <- gsub(" ", "", take_up$school)
+
+```
+### Merging Datasets
+```{r}
+
+# Aggregating schools data to avoid many to many merging
+agg_schools <- schools %>%
+  group_by(district_id) %>%
+  summarize(
+    avg_teachers = mean(num_teachers, na.rm = TRUE),   # Average number of teachers per district
+    avg_classrooms = mean(num_classrooms, na.rm = TRUE), # Average number of classrooms
+    urban_ratio = mean(urban_rural == "Urban", na.rm = TRUE), # Proportion of urban schools
+    total_schools = n(), # Total number of schools in the district
+    treatment_assignment = first(treatment) # Keep treatment info 
+  )
+
+# Merge agg schools and students dataset
+students_schools <- merge(students, agg_schools, by = "district_id", all.x = TRUE)
+write_dta(students_schools, "students_schools.dta")
+
+library(skimr)
+skim(students_schools)
+```
+### Merging students_schools with Takeup data
+```{r}
+## Extract student number from student id to allow merge with takeup
+library(dplyr)
+
+students_schools <- students_schools %>%
+  mutate(student = as.numeric(substr(student_id, nchar(student_id) - 2, nchar(student_id))))
+
+## Merging with Take up based on Student
+final_dataset <- merge(students_schools, take_up, by = "student", all.x = TRUE)
+
+```
+## Mapping 
+```{r}
+# Installing required packages
+install.packages( "ggplot2")
+library(dplyr)
+library(ggplot2)
+install.packages("sf")
+library(sf)
+install.packages("tmap")
+
+# reading map data
+district_map <- st_read("RCT data/Data Files/sumatra.shp")
+
+# Calculating student teacher ratio
+library(dplyr)
+
+district_summary <- students_schools %>%
+  group_by(district_id) %>%
+  summarise(
+    num_students = n_distinct(student_id),
+    avg_teachers = first(avg_teachers)  
+  ) %>%
+  mutate(student_teacher_ratio = num_students / avg_teachers)
+
+# Merge with map data
+
+library(dplyr)
+
+district_map <- district_map %>%
+  rename(district_id = KAB)
+map_data <- district_map %>%
+  left_join(district_summary, by = "district_id")
+
+#Plotting on Map
+library(ggplot2)
+library(sf)
+
+
+ggplot(data = map_data) +
+  geom_sf(aes(fill = avg_teachers), color = "white") +
+  scale_fill_viridis_c(option = "C", name = "Avg. Student-Teacher Ratio") +
+  labs(
+    title = "Average Student-Teacher Ratio by District",
+    caption = "Data source: Your Dataset"
+  ) +
+  theme_minimal()
+
+```
+
+
